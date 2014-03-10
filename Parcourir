@@ -1,0 +1,226 @@
+package gestion_repertoires;
+
+import java.io.File;
+
+public class Parcourir {
+
+	public static void naviguer() {
+		int menu = 0;
+
+		do {
+			String repertoire_encours = "./Repertoires";
+			menu = Menu1(repertoire_encours);
+		} while (menu != 9);
+
+	}
+
+	public static int Menu1(String repertoire_encours) {
+		int i = 1;
+		int menu = 0;
+		int menu2 = 0;
+		String nom = null;
+		int choix = 0;
+		File path = new File(repertoire_encours);
+		File[] files = path.listFiles();
+		System.out.println("---Gestion des répertoires---");
+		for (i = 1; i <= files.length; i++) {
+			nom = (files[i - 1]).getName();
+			System.out.println(i + "- Consulter documents " + nom);
+		}
+		System.out.println(i + "- Gestion des répertoires");
+		menu = Clavier.lireInt();
+
+		for (i = 1; i <= files.length; i++) {
+			if (menu == i) {
+				repertoire_encours = repertoire_encours.concat("/").concat(
+						files[i - 1].getName());
+				do {
+					Menu2(repertoire_encours, 2);
+				} while (menu2 != 10);
+				break;
+			}
+		}
+		if (menu == (i)) {
+			System.out.println("---Gestion des répertoires---");
+			System.out.println("1- Créer un répertoire");
+			if (files.length == 0) {
+				System.out.println("2- Retour");
+			}
+			if (files.length > 0) {
+				System.out.println("2- Renommer un répertoire");
+				System.out.println("3- Supprimer un répertoire");
+				System.out.println("4- Retour");
+			}
+			menu = Clavier.lireInt();
+			if (menu == 1) {
+
+				Menu_actions.Create(repertoire_encours);
+				System.out.println("Le répertoire a bien été créer!");
+			}
+			if (files.length > 0) {
+				if (menu == 2) {
+
+					Menu_actions.Rename(repertoire_encours);
+				}
+
+				if (menu == 3) {
+					System.out.println("Quel répertoire choissisez vous?");
+					for (i = 1; i <= files.length; i++) {
+						nom = (files[i - 1]).getName();
+						System.out.println(i + "- Documents " + nom);
+					}
+					choix = Clavier.lireInt();
+					nom = (files[choix - 1]).getPath();
+					Menu_actions.delete_lvl4(nom);
+				}
+				if (menu == 4) {
+					Menu1(repertoire_encours);
+				}
+			} else if (menu == 2) {
+				Menu1(repertoire_encours);
+			}
+		}
+		return menu;
+
+	}
+
+	public static void Menu2(String repertoire_encours, int cpt_lvl) {
+		int i = 1;
+		int menu = 0;
+		int menu2 = 0;
+		String nomfic = null;
+		String nom = null;
+		int choix = 0;
+		File path = new File(repertoire_encours);
+		File[] files = path.listFiles();
+		if (files.length > 0 && files[0].isDirectory() && cpt_lvl < 5
+				&& cpt_lvl > 1) {
+			System.out.println("---Gestion des répertoires---");
+			for (i = 1; i <= files.length; i++) {
+				nom = (files[i - 1]).getName();
+				System.out.println(i + "- Consulter documents " + nom);
+			}
+			System.out.println(i + "- Gestion des répertoires");
+			System.out.println(i + 1 + "- Retour");
+			menu = Clavier.lireInt();
+
+			for (i = 1; i <= files.length; i++) {
+				if (menu == i) {
+					repertoire_encours = repertoire_encours.concat("/").concat(
+							files[i - 1].getName());
+					cpt_lvl++;
+					Menu2(repertoire_encours, cpt_lvl);
+				}
+			}
+			if (menu == (i)) {
+				System.out.println("---Gestion des répertoires---");
+				System.out.println("1- Créer un répertoire");
+				if (files.length == 0) {
+					System.out.println("2- Retour");
+				}
+				if (files.length > 0) {
+					System.out.println("2- Renommer un répertoire");
+					System.out.println("3- Déplacer un répertoire");
+					System.out.println("4- Supprimer un répertoire");
+					System.out.println("5- Retour");
+				}
+				menu = Clavier.lireInt();
+				if (menu == 1) {
+
+					Menu_actions.Create(repertoire_encours);
+					System.out.println("Le répertoire a bien été créer!");
+				}
+				if (files.length > 0) {
+					if (menu == 2) {
+
+						Menu_actions.Rename(repertoire_encours);
+					}
+
+					if (menu == 3) {
+						System.out.println("Quel répertoire choissisez vous?");
+						for (i = 1; i <= files.length; i++) {
+							nom = (files[i - 1]).getName();
+							System.out.println(i + "- Documents " + nom);
+						}
+						choix = Clavier.lireInt();
+						nomfic = (files[choix - 1]).getName();
+						nom = repertoire_encours.concat("/").concat(nomfic);
+						Menu_actions.Move(repertoire_encours, nom, nomfic);
+					}
+
+					if (menu == 4) {
+						System.out.println("Quel répertoire choissisez vous?");
+						for (i = 1; i <= files.length; i++) {
+							nom = (files[i - 1]).getName();
+							System.out.println(i + "- Documents " + nom);
+						}
+						choix = Clavier.lireInt();
+						nom = (files[choix - 1]).getPath();
+						Menu_actions.delete_lvl4(nom);
+					}
+					if (menu == 5) {
+						Menu2(repertoire_encours, cpt_lvl);
+					}
+				} else if (menu == 2) {
+					Menu2(repertoire_encours, cpt_lvl);
+				}
+			} else if (menu == i + 1) {
+				repertoire_encours = Rep_return(repertoire_encours);
+				cpt_lvl--;
+				Menu2(repertoire_encours, cpt_lvl);
+			}
+		} else if (files.length == 0 && cpt_lvl < 5 && cpt_lvl > 1) {
+			System.out.println("---Gestion des répertoires---");
+			System.out.println("1- Créer un répertoire");
+			System.out.println("2- Retour");
+			menu2 = Clavier.lireInt();
+			if (menu2 == 1) {
+				Menu_actions.Create(repertoire_encours);
+			}
+			if (menu2 == 2) {
+				repertoire_encours = Rep_return(repertoire_encours);
+				cpt_lvl--;
+			}
+			Menu2(repertoire_encours, cpt_lvl);
+
+		} else if (files.length > 0 && files[0].isFile() && cpt_lvl > 1) {
+			System.out.println("---Gestion des répertoires---");
+			for (i = 1; i <= files.length; i++) {
+				nom = (files[i - 1]).getName();
+				System.out.println(i + "- Consulter fichier " + nom);
+			}
+			System.out.println(i + "- Retour");
+			menu2 = Clavier.lireInt();
+			if (menu2 <= files.length) {
+				System.out
+						.println("Vous ne pouvez pas ouvrir ce fichier pour l'instant");
+			}
+			if (menu2 == i) {
+				repertoire_encours = Rep_return(repertoire_encours);
+				cpt_lvl--;
+				Menu2(repertoire_encours, cpt_lvl);
+			}
+
+		} else if (cpt_lvl == 5) {
+			System.out.println("---Gestion des répertoires---");
+			System.out
+					.println("Vous ne pouvez plus créer de répertoires a ce niveau.");
+			System.out.println("1- Retour");
+			menu2 = Clavier.lireInt();
+			if (menu2 == 1) {
+				repertoire_encours = Rep_return(repertoire_encours);
+				cpt_lvl--;
+			}
+			Menu2(repertoire_encours, cpt_lvl);
+		} else if (cpt_lvl == 1) {
+			Menu1(repertoire_encours);
+		}
+
+	}
+
+	public static String Rep_return(String rep) {
+		File path = new File(rep);
+		rep = path.getParent();
+		return rep;
+	}
+}
