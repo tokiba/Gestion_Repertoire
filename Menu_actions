@@ -1,0 +1,158 @@
+package gestion_repertoires;
+
+import java.io.File;
+
+public class Menu_actions {
+
+	static public void delete_lvl1(String emplacement) {
+
+		File path = new File(emplacement);
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].isDirectory()) {
+					delete_lvl1(path + "\\" + files[i]);
+				} else {
+					files[i].delete();
+				}
+			}
+		}
+		path.delete();
+	}
+
+	static public void delete_lvl2(String emplacement) {
+		File path = new File(emplacement);
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				String emp1 = files[i].getAbsolutePath();
+				System.out.println(emp1);
+				delete_lvl1(emp1);
+
+			}
+			path.delete();
+		}
+	}
+
+	static public void delete_lvl3(String emplacement) {
+		File path = new File(emplacement);
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				String emp2 = files[i].getAbsolutePath();
+				System.out.println(emp2);
+				delete_lvl2(emp2);
+
+			}
+			path.delete();
+		}
+	}
+
+	static public void delete_lvl4(String emplacement) {
+		File path = new File(emplacement);
+		if (path.exists()) {
+			File[] files = path.listFiles();
+			for (int i = 0; i < files.length; i++) {
+				String emp3 = files[i].getAbsolutePath();
+				System.out.println(emp3);
+				delete_lvl3(emp3);
+
+			}
+			path.delete();
+		}
+	}
+
+	public static void Rename(String emplacement) {
+		int i = 0, choix = 0;
+		String a_nom = null, n_nom = null;
+		File path = new File(emplacement);
+		File[] files = path.listFiles();
+		System.out.println("Quel répertoire choissisez vous?");
+		for (i = 1; i <= files.length; i++) {
+			a_nom = (files[i - 1]).getName();
+			System.out.println(i + "- Documents " + a_nom);
+		}
+		choix = Clavier.lireInt();
+		a_nom = (files[choix - 1]).getName();
+		System.out.println("Indiquez le nouveau nom du répertoire:");
+		n_nom = Clavier.lireString();
+
+		n_nom = emplacement.concat("/").concat(n_nom);
+		File nouveau_nom = new File(n_nom);
+		a_nom = emplacement.concat("/").concat(a_nom);
+		File ancien_nom = new File(a_nom);
+		ancien_nom.renameTo(nouveau_nom);
+	}
+
+	public static void Move(String a_emp, String fic_emp, String nomfic) {
+		int i = 0;
+		int menu = 0;
+		String o_nom = null, d_nom = null;
+		File path = new File(a_emp);
+		File[] files = path.listFiles();
+		File origine = new File(fic_emp);
+		if (files.length > 0 && files[0].isDirectory()) {
+
+			System.out.println("Choissisez le nouveau répertoire:");
+			System.out.println("Choisir le répertoire:");
+			for (i = 1; i <= files.length; i++) {
+				if ((files[i - 1]).getName().equals(nomfic)) {
+					i++;
+				}
+				if (i <= files.length) {
+					o_nom = (files[i - 1]).getName();
+					System.out.println(i + "- Documents " + o_nom);
+				} else {
+					System.out
+							.println("Il n'y a plus de dossier dans ce répertoire");
+				}
+			}
+			System.out.println("Se déplacer dans le répertoire:");
+			for (; i <= files.length * 2; i++) {
+				if ((files[i - 1 - files.length]).getName().equals(nomfic)) {
+					i++;
+				}
+				if (i <= files.length * 2) {
+					o_nom = (files[i - 1 - files.length]).getName();
+					System.out.println(i + "- Documents " + o_nom);
+				} else {
+					System.out
+							.println("Il n'y a plus de dossier dans ce répertoire");
+				}
+			}
+			System.out.println(i + "- Retour");
+			menu = Clavier.lireInt();
+			if (menu <= files.length) {
+				d_nom = files[menu - 1].getName();
+				a_emp = a_emp.concat("/").concat(d_nom);
+				a_emp = a_emp.concat("/").concat(nomfic);
+				File destination = new File(a_emp);
+				origine.renameTo(destination);
+			} else if (menu > files.length && menu <= (files.length * 2)) {
+				d_nom = files[menu - 1 - files.length].getName();
+				a_emp = a_emp.concat("/").concat(d_nom);
+				Move(a_emp, fic_emp, nomfic);
+			} else if (menu == i) {
+				File path2 = new File(a_emp);
+				a_emp = path2.getParent();
+				System.out.println(a_emp);
+				Move(a_emp, fic_emp, nomfic);
+
+			}
+		} else {
+			a_emp = a_emp.concat("/").concat(nomfic);
+			File destination = new File(a_emp);
+			origine.renameTo(destination);
+		}
+	}
+
+	public static void Create(String emplacement) {
+		String nomfic = null;
+		System.out.println("Indiquez le nom du répertoire:");
+		nomfic = Clavier.lireString();
+		emplacement = emplacement.concat("/").concat(nomfic);
+		File repertoire = new File(emplacement);
+		repertoire.mkdir();
+	}
+
+}
